@@ -1,0 +1,37 @@
+CREATE TABLE IF NOT EXISTS Client (
+	IDClient INTEGER PRIMARY KEY,
+	Nom VARCHAR(255),
+	Prenom VARCHAR(255),
+	Age INTEGER	
+);
+
+CREATE TABLE IF NOT EXISTS Chambre (
+	IDChambre INTEGER PRIMARY KEY,
+	Nom VARCHAR(255),
+	TypeLit VARCHAR(255),
+	PrixBase DECIMAL(20,2)	
+);
+
+CREATE TABLE IF NOT EXISTS Commodite (
+	IDCommodite INTEGER PRIMARY KEY,
+	Description VARCHAR(255),
+	SurplusPrix DECIMAL(20,2)	
+); 
+
+CREATE TABLE IF NOT EXISTS Reservation (
+	IDReservation SERIAL PRIMARY KEY,
+	IDClient INTEGER,
+	IDChambre INTEGER,
+	DateDebut TIMESTAMP,
+	DateFin TIMESTAMP,
+	FOREIGN KEY (IDClient) REFERENCES Client (IDClient),
+	FOREIGN KEY (IDChambre) REFERENCES Chambre (IDChambre)
+); 
+
+CREATE TABLE IF NOT EXISTS InclusionCommodite ( 
+	IDChambre INTEGER,
+	IDCommodite INTEGER,
+	FOREIGN KEY (IDChambre) REFERENCES Chambre (IDChambre),
+	FOREIGN KEY (IDCommodite) REFERENCES Commodite (IDCommodite),
+	PRIMARY KEY(IDChambre, IDCommodite)
+); 

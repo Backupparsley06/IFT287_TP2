@@ -40,7 +40,7 @@ import java.sql.*;
  */
 public class AubergeInn
 {
-    private static Connexion cx;
+    private static GestionAubergeInn gestionAubergeInn;
 
     /**
      * @param args
@@ -53,13 +53,13 @@ public class AubergeInn
             return;
         }
         
-        cx = null;
+        gestionAubergeInn = null;
         
         try
         {
             // Il est possible que vous ayez à déplacer la connexion ailleurs.
             // N'hésitez pas à le faire!
-            cx = new Connexion(args[0], args[1], args[2], args[3]);
+        	gestionAubergeInn = new GestionAubergeInn(args[0], args[1], args[2], args[3]);
             BufferedReader reader = ouvrirFichier(args);
             String transaction = lireTransaction(reader);
             while (!finTransaction(transaction))
@@ -70,8 +70,8 @@ public class AubergeInn
         }
         finally
         {
-            if (cx != null)
-                cx.fermer();
+            if (gestionAubergeInn != null)
+            	gestionAubergeInn.fermer();
         }
     }
 
@@ -92,12 +92,14 @@ public class AubergeInn
                 // les commandes de votre programme. Vous pouvez ajouter autant
                 // de else if que necessaire. Vous n'avez pas a traiter la
                 // commande "quitter".
-                if (command.equals("commande1"))
+                if (command.equals("ajouterClient"))
                 {
                     // Lecture des parametres
-                    String param1 = readString(tokenizer);
-                    Date param2 = readDate(tokenizer);
-                    int param3 = readInt(tokenizer);
+                	int iDClient = readInt(tokenizer);
+                    String nom = readString(tokenizer);
+                    String prenom = readString(tokenizer);
+                    int age = readInt(tokenizer);
+                    gestionAubergeInn.GetGestionClient().Ajouter(iDClient, nom, prenom, age);
                     // Appel de la methode des gestionnaires qui traite la transaction specifique
                 }
                 else if (command.equals("commande2"))
@@ -113,11 +115,13 @@ public class AubergeInn
         }
         catch (Exception e)
         {
+        	// ON NE DEVRAIS JAMAIS RENTRER ICI!!!!!!!!!!!!!!!!!!!!!!!!!
             System.out.println(" " + e.toString());
             // Ce rollback est ici seulement pour vous aider et éviter des problèmes lors de la correction
             // automatique. En théorie, il ne sert à rien et ne devrait pas apparaître ici dans un programme
             // fini et fonctionnel sans bogues.
-            cx.rollback();
+            
+            //cx.rollback();
         }
     }
 
