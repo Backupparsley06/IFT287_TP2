@@ -100,12 +100,11 @@ public class AubergeInn
                     String prenom = readString(tokenizer);
                     int age = readInt(tokenizer);
                     gestionAubergeInn.GetGestionClient().Ajouter(iDClient, nom, prenom, age);
-                    // Appel de la methode des gestionnaires qui traite la transaction specifique
                 }
-                else if (command.equals("commande2"))
+                else if (command.equals("supprimerClient"))
                 {
-                    // Lire les parametres ici et appeler la bonne methode
-                    // de traitement pour la transaction
+                	int iDClient = readInt(tokenizer);
+                	gestionAubergeInn.GetGestionClient().Supprimer(iDClient);
                 }
                 else
                 {

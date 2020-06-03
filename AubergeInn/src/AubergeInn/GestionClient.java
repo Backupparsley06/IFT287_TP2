@@ -19,10 +19,31 @@ public class GestionClient {
         try
         {
         	if (tableClients.existe(iDClient))
-                throw new IFT287Exception("Membre existe d√©j√†: " + iDClient);
+                throw new IFT287Exception("Client existe dÈj‡†: " + iDClient);
 
             // Ajout du Client.
         	tableClients.Insert(iDClient, nom, prenom, age);
+            
+            // Commit
+            cx.commit();
+        }
+        catch (Exception e)
+        {
+            cx.rollback();
+            throw e;
+        }
+    }
+	
+	public void Supprimer(int iDClient)
+            throws IFT287Exception, SQLException
+    {
+        try
+        {
+        	if (!tableClients.existe(iDClient))
+                throw new IFT287Exception("Client existe pas†: " + iDClient);
+
+            // suppression du Client.
+        	tableClients.Delete(iDClient);
             
             // Commit
             cx.commit();
