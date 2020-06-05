@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS Reservation (
 	IDChambre INTEGER,
 	DateDebut TIMESTAMP,
 	DateFin TIMESTAMP,
+	Prix DECIMAL(20,2),
 	FOREIGN KEY (IDClient) REFERENCES Client (IDClient),
 	FOREIGN KEY (IDChambre) REFERENCES Chambre (IDChambre)
 ); 

@@ -13,7 +13,7 @@ public class GestionClient {
 		this.tableClients = tableClients;
 	}
 	
-	public void Ajouter(int iDClient, String nom, String prenom, int age)
+	public void ajouter(int iDClient, String nom, String prenom, int age)
             throws IFT287Exception, SQLException
     {
         try
@@ -34,7 +34,7 @@ public class GestionClient {
         }
     }
 	
-	public void Supprimer(int iDClient)
+	public void supprimer(int iDClient)
             throws IFT287Exception, SQLException
     {
         try

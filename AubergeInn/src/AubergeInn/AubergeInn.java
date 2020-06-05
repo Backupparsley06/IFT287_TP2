@@ -99,12 +99,49 @@ public class AubergeInn
                     String nom = readString(tokenizer);
                     String prenom = readString(tokenizer);
                     int age = readInt(tokenizer);
-                    gestionAubergeInn.GetGestionClient().Ajouter(iDClient, nom, prenom, age);
+                    gestionAubergeInn.GetGestionClient().ajouter(iDClient, nom, prenom, age);
                 }
                 else if (command.equals("supprimerClient"))
                 {
                 	int iDClient = readInt(tokenizer);
-                	gestionAubergeInn.GetGestionClient().Supprimer(iDClient);
+                	gestionAubergeInn.GetGestionClient().supprimer(iDClient);
+                }
+                else if (command.equals("ajouterChambre"))
+                {
+                    // Lecture des parametres
+                	int iDChambre = readInt(tokenizer);
+                    String nom = readString(tokenizer);
+                    String typeLit = readString(tokenizer);
+                    double prixBase = readDouble(tokenizer);
+                    gestionAubergeInn.GetGestionChambre().ajouter(iDChambre, nom, typeLit, prixBase);
+                }
+                else if (command.equals("supprimerChambre"))
+                {
+                    // Lecture des parametres
+                	int iDChambre = readInt(tokenizer);
+                    gestionAubergeInn.GetGestionChambre().supprimer(iDChambre);
+                }
+                else if (command.equals("ajouterCommodite"))
+                {
+                    // Lecture des parametres
+                	int idCommodite = readInt(tokenizer);
+                    String description = readString(tokenizer);
+                    double surplusPrix = readDouble(tokenizer);
+                    gestionAubergeInn.GetGestionCommodite().ajouter(idCommodite, description, surplusPrix);
+                }
+                else if (command.equals("inclureCommodite"))
+                {
+                    // Lecture des parametres
+                	int idChambre = readInt(tokenizer);
+                	int idCommodite = readInt(tokenizer);
+                    gestionAubergeInn.GetGestionCommodite().inclure(idChambre, idCommodite);
+                }
+                else if (command.equals("enleverCommodite"))
+                {
+                    // Lecture des parametres
+                	int idChambre = readInt(tokenizer);
+                	int idCommodite = readInt(tokenizer);
+                    gestionAubergeInn.GetGestionCommodite().enlever(idChambre, idCommodite);
                 }
                 else
                 {
@@ -112,10 +149,15 @@ public class AubergeInn
                 }
             }
         }
+        catch (IFT287Exception e)
+        {
+        	System.out.println("Erreur: " + e.getMessage());
+        }
         catch (Exception e)
         {
         	// ON NE DEVRAIS JAMAIS RENTRER ICI!!!!!!!!!!!!!!!!!!!!!!!!!
-            System.out.println(" " + e.toString());
+            System.out.println("Une erreur impr�vue s'est produit.");
+            System.out.println("Erreur: " + e.toString());
             // Ce rollback est ici seulement pour vous aider et éviter des problèmes lors de la correction
             // automatique. En théorie, il ne sert à rien et ne devrait pas apparaître ici dans un programme
             // fini et fonctionnel sans bogues.
@@ -160,12 +202,12 @@ public class AubergeInn
     }
 
     /** Lecture d'une chaine de caracteres de la transaction entree a l'ecran */
-    static String readString(StringTokenizer tokenizer) throws Exception
+    static String readString(StringTokenizer tokenizer) throws IFT287Exception
     {
         if (tokenizer.hasMoreElements())
             return tokenizer.nextToken();
         else
-            throw new Exception("Autre parametre attendu");
+            throw new IFT287Exception("Autre parametre attendu");
     }
 
     /**
@@ -182,11 +224,32 @@ public class AubergeInn
             }
             catch (NumberFormatException e)
             {
-                throw new Exception("Nombre attendu a la place de \"" + token + "\"");
+                throw new IFT287Exception("Nombre attendu a la place de \"" + token + "\"");
             }
         }
         else
-            throw new Exception("Autre parametre attendu");
+            throw new IFT287Exception("Autre parametre attendu");
+    }
+    
+    /**
+     * Lecture d'un double java de la transaction entree a l'ecran
+     */
+    static double readDouble(StringTokenizer tokenizer) throws Exception
+    {
+        if (tokenizer.hasMoreElements())
+        {
+            String token = tokenizer.nextToken();
+            try
+            {
+                return Double.valueOf(token).doubleValue();
+            }
+            catch (NumberFormatException e)
+            {
+                throw new IFT287Exception("Nombre attendu a la place de \"" + token + "\"");
+            }
+        }
+        else
+            throw new IFT287Exception("Autre parametre attendu");
     }
 
     static Date readDate(StringTokenizer tokenizer) throws Exception
@@ -200,11 +263,11 @@ public class AubergeInn
             }
             catch (IllegalArgumentException e)
             {
-                throw new Exception("Date dans un format invalide - \"" + token + "\"");
+                throw new IFT287Exception("Date dans un format invalide - \"" + token + "\"");
             }
         }
         else
-            throw new Exception("Autre parametre attendu");
+            throw new IFT287Exception("Autre parametre attendu");
     }
 
 }

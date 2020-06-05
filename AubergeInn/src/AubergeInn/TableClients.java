@@ -25,13 +25,32 @@ public class TableClients {
         return cx;
     }
     
+    public TupleClient getChambre(int iDClient) throws SQLException
+    {
+    	stmtExiste.setInt(1, iDClient);
+        ResultSet rset = stmtExiste.executeQuery();
+        if (rset.next())
+        {
+        	TupleClient tupleClient = new TupleClient();
+        	tupleClient.setIDClient(rset.getInt(1));
+        	tupleClient.setNom(rset.getString(2));
+        	tupleClient.setPrenom(rset.getString(3));
+        	tupleClient.setAge(rset.getInt(4));
+            rset.close();
+            return tupleClient;
+        }
+        else
+        	rset.close();
+            return null;
+    }
+    
     public boolean existe(int iDClient) throws SQLException
     {
         stmtExiste.setInt(1, iDClient);
         ResultSet rset = stmtExiste.executeQuery();
-        boolean membreExiste = rset.next();
+        boolean clientExiste = rset.next();
         rset.close();
-        return membreExiste;
+        return clientExiste;
     }
 	
 	public void Insert(int iDClient, String nom, String prenom, int age) throws SQLException
