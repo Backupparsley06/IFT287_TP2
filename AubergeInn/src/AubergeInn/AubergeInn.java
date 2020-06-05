@@ -96,15 +96,15 @@ public class AubergeInn
                 {
                     // Lecture des parametres
                 	int iDClient = readInt(tokenizer);
-                    String nom = readString(tokenizer);
                     String prenom = readString(tokenizer);
+                    String nom = readString(tokenizer);
                     int age = readInt(tokenizer);
-                    gestionAubergeInn.GetGestionClient().ajouter(iDClient, nom, prenom, age);
+                    gestionAubergeInn.getGestionClient().ajouter(iDClient, nom, prenom, age);
                 }
                 else if (command.equals("supprimerClient"))
                 {
                 	int iDClient = readInt(tokenizer);
-                	gestionAubergeInn.GetGestionClient().supprimer(iDClient);
+                	gestionAubergeInn.getGestionClient().supprimer(iDClient);
                 }
                 else if (command.equals("ajouterChambre"))
                 {
@@ -113,13 +113,13 @@ public class AubergeInn
                     String nom = readString(tokenizer);
                     String typeLit = readString(tokenizer);
                     double prixBase = readDouble(tokenizer);
-                    gestionAubergeInn.GetGestionChambre().ajouter(iDChambre, nom, typeLit, prixBase);
+                    gestionAubergeInn.getGestionChambre().ajouter(iDChambre, nom, typeLit, prixBase);
                 }
                 else if (command.equals("supprimerChambre"))
                 {
                     // Lecture des parametres
                 	int iDChambre = readInt(tokenizer);
-                    gestionAubergeInn.GetGestionChambre().supprimer(iDChambre);
+                    gestionAubergeInn.getGestionChambre().supprimer(iDChambre);
                 }
                 else if (command.equals("ajouterCommodite"))
                 {
@@ -127,21 +127,47 @@ public class AubergeInn
                 	int idCommodite = readInt(tokenizer);
                     String description = readString(tokenizer);
                     double surplusPrix = readDouble(tokenizer);
-                    gestionAubergeInn.GetGestionCommodite().ajouter(idCommodite, description, surplusPrix);
+                    gestionAubergeInn.getGestionCommodite().ajouter(idCommodite, description, surplusPrix);
                 }
                 else if (command.equals("inclureCommodite"))
                 {
                     // Lecture des parametres
                 	int idChambre = readInt(tokenizer);
                 	int idCommodite = readInt(tokenizer);
-                    gestionAubergeInn.GetGestionCommodite().inclure(idChambre, idCommodite);
+                    gestionAubergeInn.getGestionCommodite().inclure(idChambre, idCommodite);
                 }
                 else if (command.equals("enleverCommodite"))
                 {
                     // Lecture des parametres
                 	int idChambre = readInt(tokenizer);
                 	int idCommodite = readInt(tokenizer);
-                    gestionAubergeInn.GetGestionCommodite().enlever(idChambre, idCommodite);
+                    gestionAubergeInn.getGestionCommodite().enlever(idChambre, idCommodite);
+                }
+                else if (command.equals("afficherChambresLibres"))
+                {
+                    // Lecture des parametres
+                    gestionAubergeInn.getGestionInterrogation().afficherChambresLibres();
+                }
+                else if (command.equals("afficherClient"))
+                {
+                    // Lecture des parametres
+                	int idClient = readInt(tokenizer);
+                    gestionAubergeInn.getGestionInterrogation().afficherClient(idClient);;
+                }
+                else if (command.equals("afficherChambre"))
+                {
+                    // Lecture des parametres
+                	int idChambre = readInt(tokenizer);
+                    gestionAubergeInn.getGestionInterrogation().afficherChambre(idChambre);;
+                }
+                else if (command.equals("reserver"))
+                {
+                    // Lecture des parametres
+                	int idClient = readInt(tokenizer);
+                	int idChambre = readInt(tokenizer);
+                	Date dateDebut = readDate(tokenizer);
+                	Date dateFin = readDate(tokenizer);
+                    gestionAubergeInn.getGestionReservation().reserver(idClient, idChambre, dateDebut, dateFin);
                 }
                 else
                 {

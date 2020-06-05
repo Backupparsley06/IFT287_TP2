@@ -12,6 +12,7 @@ public class GestionAubergeInn {
 	private GestionChambre gestionChambre;
 	private GestionCommodite gestionCommodite;
 	private GestionReservation gestionReservation;
+	private GestionInterrogation gestionInterrogation;
 	
 	public GestionAubergeInn(String serveur, String bd, String user, String password)
 		throws IFT287Exception, SQLException
@@ -22,10 +23,11 @@ public class GestionAubergeInn {
 		tableCommodites = new TableCommodites(cx);
 		tableInclusionCommodite = new TableInclusionCommodites(cx);
 		tableReservations = new TableReservations(cx);
-		setGestionClient(new GestionClient(tableClients));
-		setGestionChambre(new GestionChambre(tableChambres, tableInclusionCommodite));
+		setGestionClient(new GestionClient(tableClients, tableReservations));
+		setGestionChambre(new GestionChambre(tableChambres, tableReservations, tableInclusionCommodite));
 		setGestionCommodite(new GestionCommodite(tableCommodites, tableChambres, tableInclusionCommodite));
 		setGestionReservation(new GestionReservation(tableReservations, tableClients, tableChambres, tableInclusionCommodite, tableCommodites));
+		setGestionInterrogation(new GestionInterrogation(tableReservations, tableClients, tableChambres, tableInclusionCommodite, tableCommodites));
 	}
 	
     public void fermer() throws SQLException
@@ -39,7 +41,7 @@ public class GestionAubergeInn {
         this.gestionClient = gestionClient;
     }
     
-    public GestionClient GetGestionClient()
+    public GestionClient getGestionClient()
     {
         return gestionClient;
     }
@@ -49,7 +51,7 @@ public class GestionAubergeInn {
         this.gestionChambre = gestionChambre;
     }
     
-    public GestionChambre GetGestionChambre()
+    public GestionChambre getGestionChambre()
     {
         return gestionChambre;
     }
@@ -59,7 +61,7 @@ public class GestionAubergeInn {
         this.gestionCommodite = gestionCommodite;
     }
     
-    public GestionCommodite GetGestionCommodite()
+    public GestionCommodite getGestionCommodite()
     {
         return gestionCommodite;
     }
@@ -69,8 +71,18 @@ public class GestionAubergeInn {
         this.gestionReservation = gestionReservation;
     }
     
-    public GestionReservation GetGestionReservation()
+    public GestionReservation getGestionReservation()
     {
         return gestionReservation;
+    }
+    
+    private void setGestionInterrogation(GestionInterrogation gestionInterrogation)
+    {
+        this.gestionInterrogation = gestionInterrogation;
+    }
+    
+    public GestionInterrogation getGestionInterrogation()
+    {
+        return gestionInterrogation;
     }
 }

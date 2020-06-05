@@ -1,16 +1,20 @@
 package AubergeInn;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class GestionClient {
 	
 	private Connexion cx;
 	private TableClients tableClients;
+	private TableReservations tableReservations;
 	
-	public GestionClient(TableClients tableClients)
+	
+	public GestionClient(TableClients tableClients, TableReservations tableReservations)
 	{
 		this.cx = tableClients.getConnexion();
 		this.tableClients = tableClients;
+		this.tableReservations = tableReservations;
 	}
 	
 	public void ajouter(int iDClient, String nom, String prenom, int age)
@@ -22,7 +26,7 @@ public class GestionClient {
                 throw new IFT287Exception("Client existe déjà : " + iDClient);
 
             // Ajout du Client.
-        	tableClients.Insert(iDClient, nom, prenom, age);
+        	tableClients.insert(iDClient, nom, prenom, age);
             
             // Commit
             cx.commit();
@@ -41,9 +45,18 @@ public class GestionClient {
         {
         	if (!tableClients.existe(iDClient))
                 throw new IFT287Exception("Client existe pas : " + iDClient);
-
+        	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromClient(iDClient);
+        	for (TupleReservation tupleReservation : ltupleReservation) {
+    			if (tupleReservation.getDateDebut().getTime() <= System.currentTimeMillis() 
+    					&& tupleReservation.getDateFin().getTime() >= System.currentTimeMillis()) {
+    				throw new IFT287Exception("Client a une reservation en cours : " + tupleReservation.getIDReservation());
+    			}
+        	}
+        	for (TupleReservation tupleReservation : ltupleReservation) {
+        		tableReservations.delete(tupleReservation.getIDReservation());
+        	}
             // suppression du Client.
-        	tableClients.Delete(iDClient);
+        	tableClients.delete(iDClient);
             
             // Commit
             cx.commit();

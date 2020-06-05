@@ -1,16 +1,19 @@
 package AubergeInn;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class GestionChambre {
 	private Connexion cx;
 	private TableChambres tableChambres;
+	private TableReservations tableReservations;
 	private TableInclusionCommodites tableInclusionCommodite;
 	
-	public GestionChambre(TableChambres tableChambres, TableInclusionCommodites tableInclusionCommodite)
+	public GestionChambre(TableChambres tableChambres, TableReservations tableReservations, TableInclusionCommodites tableInclusionCommodite)
 	{
 		this.cx = tableChambres.getConnexion();
 		this.tableChambres = tableChambres;
+		this.tableReservations = tableReservations;
 		this.tableInclusionCommodite = tableInclusionCommodite;
 	}
 	
@@ -23,7 +26,9 @@ public class GestionChambre {
                 throw new IFT287Exception("Chambre existe déjà : " + iDChambre);
         	if (prixBase < 0)
         		throw new IFT287Exception("Prix de base invalide");
-
+        	
+        	
+        	
             // Ajout du Client.
         	tableChambres.insert(iDChambre, nom, typeLit, prixBase);
             
@@ -44,6 +49,17 @@ public class GestionChambre {
         {
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas : " + iDChambre);
+        	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromChambre(iDChambre);
+        	for (TupleReservation tupleReservation : ltupleReservation) {
+    			if ((tupleReservation.getDateDebut().getTime() <= System.currentTimeMillis() 
+    					&& tupleReservation.getDateFin().getTime() >= System.currentTimeMillis())
+    					|| tupleReservation.getDateDebut().getTime() >= System.currentTimeMillis()) {
+    				throw new IFT287Exception("Chambre a une reservation en cours ou dans le future : " + tupleReservation.getIDReservation());
+    			}
+        	}
+        	for (TupleReservation tupleReservation : ltupleReservation) {
+        		tableReservations.delete(tupleReservation.getIDReservation());
+        	}
         	
         	// suppression des commoditées inclus
         	tableInclusionCommodite.deleteOnChambre(iDChambre);

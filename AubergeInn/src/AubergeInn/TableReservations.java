@@ -11,6 +11,7 @@ public class TableReservations {
 	private PreparedStatement stmtFromClient;
 	private PreparedStatement stmtFromChambre;
 	private PreparedStatement stmtInsert;
+	private PreparedStatement stmtDelete;
 	private Connexion cx;
 	
 	public TableReservations(Connexion cx)
@@ -23,7 +24,7 @@ public class TableReservations {
                 .prepareStatement("select IDReservation, IDClient, IDChambre, DateDebut, DateFin, Prix from Reservation where IDChambre = ?");
         stmtInsert = cx.getConnection().prepareStatement(
                 "insert into Reservation (IDClient, IDChambre, DateDebut, DateFin, Prix) " + "values (?,?,?,?,?)");
-        
+        stmtDelete = cx.getConnection().prepareStatement("delete from Reservation where IDReservation = ?");
 	}
 	
     public Connexion getConnexion()
@@ -82,5 +83,11 @@ public class TableReservations {
         stmtInsert.setDate(4, dateFin);
         stmtInsert.setDouble(5, prix);
         stmtInsert.executeUpdate();
+    }
+	
+	public void delete(int iDReservation) throws SQLException
+    {
+		stmtDelete.setInt(1, iDReservation);
+		stmtDelete.executeUpdate();
     }
 }

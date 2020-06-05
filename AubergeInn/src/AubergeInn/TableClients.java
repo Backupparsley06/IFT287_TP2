@@ -25,7 +25,7 @@ public class TableClients {
         return cx;
     }
     
-    public TupleClient getChambre(int iDClient) throws SQLException
+    public TupleClient getClient(int iDClient) throws SQLException
     {
     	stmtExiste.setInt(1, iDClient);
         ResultSet rset = stmtExiste.executeQuery();
@@ -53,7 +53,7 @@ public class TableClients {
         return clientExiste;
     }
 	
-	public void Insert(int iDClient, String nom, String prenom, int age) throws SQLException
+	public void insert(int iDClient, String nom, String prenom, int age) throws SQLException
     {
         stmtInsert.setInt(1, iDClient);
         stmtInsert.setString(2, nom);
@@ -62,7 +62,7 @@ public class TableClients {
         stmtInsert.executeUpdate();
     }
 	
-	public void Delete(int iDClient) throws SQLException
+	public void delete(int iDClient) throws SQLException
     {
 		stmtDelete.setInt(1, iDClient);
 		stmtDelete.executeUpdate();
