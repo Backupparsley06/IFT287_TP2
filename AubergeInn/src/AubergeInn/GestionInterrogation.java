@@ -1,7 +1,7 @@
 package AubergeInn;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GestionInterrogation {
 	private Connexion cx;
@@ -22,14 +22,13 @@ public class GestionInterrogation {
 		this.tableCommodites = tableCommodites;
 	}
 	
-	public void afficherChambresLibres()
+	public List<TupleChambre> afficherChambresLibres()
             throws IFT287Exception, SQLException
     {
-		DecimalFormat df = new DecimalFormat("#0.00");
         try
         {
-        	System.out.println("idChambre : nom : typeLit : prixDeLocation");
-        	System.out.println("------------------------------------------");
+        	//****
+        	List<TupleChambre> chambres = new ArrayList<TupleChambre>();
         	for(TupleChambre tupleChambre : tableChambres.getChambres()) {
         		boolean estLibre = true;
         		for(TupleReservation tupleReservation: 
@@ -40,20 +39,18 @@ public class GestionInterrogation {
         			}
         		}
         		if (estLibre) {
-        			double prix = tupleChambre.getPrixBase();
         			for (TupleInclusionCommodite tupleInclusionCommodite 
         					: tableInclusionCommodites.getInclusionCommoditeFromChambre(tupleChambre.getIDChambre())) {
-        				prix += tableCommodites.getCommodite(tupleInclusionCommodite.getIDCommodite()).getSurplusPrix();
+        				tupleChambre.getCommodites().add(tableCommodites.getCommodite(tupleInclusionCommodite.getIDCommodite()));
         			}
-        			System.out.println(tupleChambre.getIDChambre() 
-        					+ " : " + tupleChambre.getNom()
-        					+ " : " + tupleChambre.getTypeLit()
-        					+ " : " + df.format(prix));
+        			chambres.add(tupleChambre);
         		}
         		
         	}
+        	
             // Commit
             cx.commit();
+        	return chambres;
         }
         catch (Exception e)
         {
@@ -62,12 +59,21 @@ public class GestionInterrogation {
         }
     }
 	
-	public void afficherClient(int iDClient)
+	public TupleClient afficherClient(int iDClient)
             throws IFT287Exception, SQLException
     {
-		DecimalFormat df = new DecimalFormat("#0.00");
+		
         try
         {
+        	if (!tableClients.existe(iDClient))
+                throw new IFT287Exception("Client existe pas : " + iDClient);
+        	TupleClient tupleClient = tableClients.getClient(iDClient);
+        	tupleClient.setReservations(tableReservations.getReservationsFromClient(tupleClient.getIDClient()));
+
+        	
+        
+        	/*
+        	DecimalFormat df = new DecimalFormat("#0.00");
         	if (!tableClients.existe(iDClient))
                 throw new IFT287Exception("Client existe pas : " + iDClient);
         	System.out.println("idClient : nom : prenom : age");
@@ -94,9 +100,12 @@ public class GestionInterrogation {
         	System.out.println(" Total ");
         	System.out.println("-------");
         	System.out.println(df.format(prixTotal));
+        	*/
+        	
         	
             // Commit
             cx.commit();
+            return tupleClient;
         }
         catch (Exception e)
         {
@@ -105,40 +114,23 @@ public class GestionInterrogation {
         }
     }
 	
-	public void afficherChambre(int iDChambre)
+	public TupleChambre afficherChambre(int iDChambre)
             throws IFT287Exception, SQLException
     {
-		DecimalFormat df = new DecimalFormat("#0.00");
+		
         try
         {
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas : " + iDChambre);
-        	
-        	System.out.println("idChambre : nom : typeLit : prixDeBase");
-        	System.out.println("--------------------------------------");
         	TupleChambre tupleChambre = tableChambres.getChambre(iDChambre);
-        	System.out.println(tupleChambre.getIDChambre() 
-					+ " : " + tupleChambre.getNom()
-					+ " : " + tupleChambre.getTypeLit()
-					+ " : " + df.format(tupleChambre.getPrixBase()));
-        	double prixTotal = tupleChambre.getPrixBase();
-        	System.out.println("idCommodite : description : surPlusPrix");
-        	System.out.println("---------------------------------------");
         	for (TupleInclusionCommodite tupleInclusionCommodite 
         			: tableInclusionCommodites.getInclusionCommoditeFromChambre(iDChambre)) {
-        		TupleCommodite tupleCommodite = tableCommodites.getCommodite(tupleInclusionCommodite.getIDCommodite());
-        		prixTotal += tupleCommodite.getSurplusPrix();
-        		System.out.println(tupleCommodite.getIDCommodite() 
-    					+ " : " + tupleCommodite.getDescription()
-    					+ " : " + df.format(tupleCommodite.getSurplusPrix()));
+        		tupleChambre.getCommodites().add(tableCommodites.getCommodite(tupleInclusionCommodite.getIDCommodite()));
         	}
-        	System.out.println(" Total ");
-        	System.out.println("-------");
-        	System.out.println(df.format(prixTotal));
-        	
-        	
+
             // Commit
             cx.commit();
+            return tupleChambre;
         }
         catch (Exception e)
         {

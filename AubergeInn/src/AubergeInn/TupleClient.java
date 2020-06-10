@@ -1,12 +1,17 @@
 package AubergeInn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TupleClient {
 	private int iDClient;
 	private String nom;
 	private String prenom;
 	private int age;
+	private List<TupleReservation> reservations;
 	
 	public TupleClient() {
+		setReservations();
 	}
 	
 	public TupleClient(int iDClient, String nom, String prenom, int age) {
@@ -14,6 +19,7 @@ public class TupleClient {
 		this.setNom(nom);
 		this.setPrenom(prenom);
 		this.setAge(age);
+		setReservations();
 	}
 	
 	public int getIDClient()
@@ -54,5 +60,29 @@ public class TupleClient {
     public void setAge(int age)
     {
         this.age = age;
+    }
+    
+    public List<TupleReservation> getReservations()
+    {
+        return reservations;
+    }
+    
+    public void setReservations(List<TupleReservation> reservations)
+    {
+        this.reservations = reservations;
+    }
+
+    public void setReservations()
+    {
+        this.reservations = new ArrayList<TupleReservation>();
+    }
+    
+    public double getPrixTotal()
+    {
+    	double prix = 0;
+    	for (TupleReservation r : getReservations()) 
+    		prix += r.getPrix();
+    	return prix;
+    	
     }
 }

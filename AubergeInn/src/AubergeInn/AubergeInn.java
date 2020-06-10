@@ -5,8 +5,10 @@
 package AubergeInn;
 
 import java.io.*;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.sql.*;
+import java.text.DecimalFormat;
 
 /**
  * Fichier de base pour le TP2 du cours IFT287
@@ -145,20 +147,69 @@ public class AubergeInn
                 }
                 else if (command.equals("afficherChambresLibres"))
                 {
-                    // Lecture des parametres
-                    gestionAubergeInn.getGestionInterrogation().afficherChambresLibres();
+                	
+                	DecimalFormat df = new DecimalFormat("#0.00");
+                	System.out.println("idChambre : nom : typeLit : prixDeLocation");
+                	System.out.println("------------------------------------------");
+                	for(TupleChambre tupleChambre : gestionAubergeInn.getGestionInterrogation().afficherChambresLibres()) {
+            			System.out.println(tupleChambre.getIDChambre() 
+            					+ " : " + tupleChambre.getNom()
+            					+ " : " + tupleChambre.getTypeLit()
+            					+ " : " + df.format(tupleChambre.getPrixTotal()));
+                	}
                 }
                 else if (command.equals("afficherClient"))
                 {
                     // Lecture des parametres
                 	int idClient = readInt(tokenizer);
-                    gestionAubergeInn.getGestionInterrogation().afficherClient(idClient);;
+                	TupleClient client = gestionAubergeInn.getGestionInterrogation().afficherClient(idClient);
+                	DecimalFormat df = new DecimalFormat("#0.00");
+                	System.out.println("idClient : nom : prenom : age");
+                	System.out.println("-----------------------------");
+                	System.out.println(client.getIDClient() 
+                			+ " : " + client.getNom()
+                			+ " : " + client.getPrenom()
+                			+ " : " + client.getAge());
+                	
+                	System.out.println("idReservation : idClient : idChambre : dateDebut : dateFin : prixDeLocation");
+                	System.out.println("---------------------------------------------------------------------------");
+                	for(TupleReservation tupleReservation: 
+                		client.getReservations()) {
+                		System.out.println(tupleReservation.getIDReservation() 
+                    			+ " : " + tupleReservation.getIDClient()
+                    			+ " : " + tupleReservation.getIDChambre()
+                    			+ " : " + tupleReservation.getDateDebut()
+                    			+ " : " + tupleReservation.getDateFin()
+                    			+ " : " + df.format(tupleReservation.getPrix()));
+            		}
+                	System.out.println(" Total ");
+                	System.out.println("-------");
+                	System.out.println(df.format(client.getPrixTotal()));
                 }
                 else if (command.equals("afficherChambre"))
                 {
                     // Lecture des parametres
                 	int idChambre = readInt(tokenizer);
-                    gestionAubergeInn.getGestionInterrogation().afficherChambre(idChambre);;
+                    TupleChambre tupleChambre = gestionAubergeInn.getGestionInterrogation().afficherChambre(idChambre);
+                    DecimalFormat df = new DecimalFormat("#0.00");
+                	
+                	System.out.println("idChambre : nom : typeLit : prixDeBase");
+                	System.out.println("--------------------------------------");
+                	System.out.println(tupleChambre.getIDChambre() 
+        					+ " : " + tupleChambre.getNom()
+        					+ " : " + tupleChambre.getTypeLit()
+        					+ " : " + df.format(tupleChambre.getPrixBase()));
+                	System.out.println("idCommodite : description : surPlusPrix");
+                	System.out.println("---------------------------------------");
+                	for (TupleCommodite tupleCommodite 
+                			: tupleChambre.getCommodites()) {
+                		System.out.println(tupleCommodite.getIDCommodite() 
+            					+ " : " + tupleCommodite.getDescription()
+            					+ " : " + df.format(tupleCommodite.getSurplusPrix()));
+                	}
+                	System.out.println(" Total ");
+                	System.out.println("-------");
+                	System.out.println(df.format(tupleChambre.getPrixTotal()));
                 }
                 else if (command.equals("reserver"))
                 {

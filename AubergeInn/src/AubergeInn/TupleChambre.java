@@ -1,13 +1,17 @@
 package AubergeInn;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class TupleChambre {
 	private int iDChambre;
 	private String nom;
 	private String typeLit;
 	private double prixBase;
+	private List<TupleCommodite> commodites;
 	
 	public TupleChambre() {
+		this.setCommodites();
 	}
 	
 	public TupleChambre(int iDChambre, String nom, String typeLit, double prixBase) {
@@ -15,6 +19,7 @@ public class TupleChambre {
 		this.setNom(nom);
 		this.setTypeLit(typeLit);
 		this.setPrixBase(prixBase);
+		this.setCommodites();
 	}
 	
 	public int getIDChambre()
@@ -55,6 +60,25 @@ public class TupleChambre {
     public void setPrixBase(double prixBase)
     {
         this.prixBase = prixBase;
+    }
+    
+	public List<TupleCommodite> getCommodites()
+    {
+        return commodites;
+    }
+
+    public void setCommodites()
+    {
+        this.commodites = new ArrayList<TupleCommodite>();
+    }
+    
+    public double getPrixTotal()
+    {
+    	double prix = getPrixBase();
+    	for (TupleCommodite c : getCommodites()) 
+    		prix += c.getSurplusPrix();
+    	return prix;
+    	
     }
 
 }
