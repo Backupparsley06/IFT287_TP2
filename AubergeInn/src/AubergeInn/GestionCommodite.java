@@ -80,7 +80,7 @@ public class GestionCommodite {
                 throw new IFT287Exception("Commodite pas inclus: " + iDCommodite);
 
             // Ajout de l'inclusion.
-        	tableInclusionCommodite.delete(new TupleInclusionCommodite(iDChambre, iDCommodite));
+        	tableInclusionCommodite.delete(tableInclusionCommodite.getInclusionCommodite(iDChambre, iDCommodite));
             
             // Commit
             cx.commit();

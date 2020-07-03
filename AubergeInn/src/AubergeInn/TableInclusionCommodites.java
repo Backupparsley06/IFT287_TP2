@@ -35,11 +35,21 @@ public class TableInclusionCommodites {
         return !stmtExiste.getResultList().isEmpty();
     }
     
+    public TupleInclusionCommodite getInclusionCommodite(int iDChambre, int iDCommodite)
+    {
+    	stmtExiste.setParameter("iDChambre", iDChambre);
+    	stmtExiste.setParameter("iDCommodite", iDCommodite);
+        List<TupleInclusionCommodite> inclusions = stmtExiste.getResultList();
+        if (!inclusions.isEmpty())
+            return inclusions.get(0);
+        else
+            return null;
+    }
+    
     public List<TupleInclusionCommodite> getInclusionCommoditeFromChambre(int IDChambre)
     {
     	stmtFromChambre.setParameter("iDChambre", IDChambre);
         return stmtFromChambre.getResultList();
-
     }
 	
 	public TupleInclusionCommodite insert(TupleInclusionCommodite inclusionCommodite)
