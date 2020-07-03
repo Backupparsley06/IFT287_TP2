@@ -2,7 +2,16 @@ package AubergeInn;
 
 import java.sql.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class TupleReservation {
+    @Id @GeneratedValue
+    private long id;
+	
+    @GeneratedValue
 	private int iDReservation;
 	private int iDClient;
 	private int iDChambre;
@@ -11,6 +20,14 @@ public class TupleReservation {
 	private double prix;
 	
 	public TupleReservation() {
+	}
+	
+	public TupleReservation(int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) {
+		this.setIDClient(iDClient);
+		this.setIDChambre(iDChambre);
+		this.setDateDebut(dateDebut);
+		this.setDateFin(dateFin);
+		this.setPrix(prix);
 	}
 	
 	public TupleReservation(int iDReservation, int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) {

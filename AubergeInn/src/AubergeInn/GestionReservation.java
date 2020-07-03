@@ -1,7 +1,6 @@
 package AubergeInn;
 
 import java.sql.Date;
-import java.sql.SQLException;
 
 public class GestionReservation {
 	private Connexion cx;
@@ -23,10 +22,11 @@ public class GestionReservation {
 	}
 	
 	public void reserver(int iDClient, int iDChambre, Date dateDebut, Date dateFin)
-            throws IFT287Exception, SQLException
+            throws IFT287Exception
     {
         try
         {
+        	cx.demarreTransaction();
         	if (!tableClients.existe(iDClient))
                 throw new IFT287Exception("Client existe pas: " + iDClient);
         	if (!tableChambres.existe(iDChambre))
@@ -50,7 +50,7 @@ public class GestionReservation {
         		prix += tableCommodites.getCommodite(tupleInclusionCommodite.getIDCommodite()).getSurplusPrix();
         	}
 
-        	tableReservations.insert(iDClient, iDChambre, dateDebut, dateFin, prix);
+        	tableReservations.insert(new TupleReservation(iDClient, iDChambre, dateDebut, dateFin, prix));
             // Commit
             cx.commit();
         }

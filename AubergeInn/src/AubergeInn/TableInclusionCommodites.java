@@ -1,31 +1,25 @@
 package AubergeInn;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.TypedQuery;
+
 public class TableInclusionCommodites {
-	private PreparedStatement stmtExiste;
-	private PreparedStatement stmtFromChambre;
-	private PreparedStatement stmtInsert;
-	private PreparedStatement stmtDelete;
-	private PreparedStatement stmtDeleteOnChambre;
+	private TypedQuery<TupleInclusionCommodite> stmtExiste;
+	private TypedQuery<TupleInclusionCommodite> stmtFromChambre;
+	private TypedQuery<TupleInclusionCommodite> stmtDeleteOnChambre;
 	private Connexion cx;
 	
 	public TableInclusionCommodites(Connexion cx)
-			throws SQLException
 	{
 		this.cx = cx;
+		
         stmtExiste = cx.getConnection()
-                .prepareStatement("select IDChambre, IDCommodite from InclusionCommodite where IDChambre = ? and IDCommodite = ?");
+                .createQuery("select i from TupleInclusionCommodite i where i.iDChambre = :iDChambre and i.iDCommodite = :iDCommodite", TupleInclusionCommodite.class);
     	stmtFromChambre = cx.getConnection()
-                .prepareStatement("select IDChambre, IDCommodite from InclusionCommodite where IDChambre = ?");
-        stmtInsert = cx.getConnection().prepareStatement(
-                "insert into InclusionCommodite (IDChambre, IDCommodite) " + "values (?,?)");
-        stmtDelete = cx.getConnection().prepareStatement("delete from InclusionCommodite where IDChambre = ? and IDCommodite = ?");
-        stmtDeleteOnChambre = cx.getConnection().prepareStatement("delete from InclusionCommodite where IDChambre = ?");
+                .createQuery("select i from TupleInclusionCommodite i where i.iDChambre = :iDChambre", TupleInclusionCommodite.class);
+    	stmtDeleteOnChambre = cx.getConnection()
+        		.createQuery("delete from TupleInclusionCommodite i where i.iDChambre = :iDChambre", TupleInclusionCommodite.class);
         
 	}
 	
@@ -34,50 +28,39 @@ public class TableInclusionCommodites {
         return cx;
     }
     
-    public boolean existe(int iDChambre, int iDCommodite) throws SQLException
+    public boolean existe(int iDChambre, int iDCommodite)
     {
-        stmtExiste.setInt(1, iDChambre);
-        stmtExiste.setInt(2, iDCommodite);
-        ResultSet rset = stmtExiste.executeQuery();
-        boolean inclusionCommoditeExiste = rset.next();
-        rset.close();
-        return inclusionCommoditeExiste;
+    	stmtExiste.setParameter("iDChambre", iDChambre);
+    	stmtExiste.setParameter("iDCommodite", iDCommodite);
+        return !stmtExiste.getResultList().isEmpty();
     }
     
-    public List<TupleInclusionCommodite> getInclusionCommoditeFromChambre(int IDChambre) throws SQLException
+    public List<TupleInclusionCommodite> getInclusionCommoditeFromChambre(int IDChambre)
     {
-    	stmtFromChambre.setInt(1, IDChambre);
-        ResultSet rset = stmtFromChambre.executeQuery();
-        
-        List<TupleInclusionCommodite> lRes = new ArrayList<TupleInclusionCommodite>();
-        while (rset.next()) {
-        	TupleInclusionCommodite tupleInclusionCommodite = new TupleInclusionCommodite();
-        	tupleInclusionCommodite.setIDChambre(rset.getInt(1));
-        	tupleInclusionCommodite.setIDCommodite(rset.getInt(2));
-        	lRes.add(tupleInclusionCommodite);
+    	stmtFromChambre.setParameter("iDChambre", IDChambre);
+        return stmtFromChambre.getResultList();
+
+    }
+	
+	public TupleInclusionCommodite insert(TupleInclusionCommodite inclusionCommodite)
+    {
+		cx.getConnection().persist(inclusionCommodite);
+		return inclusionCommodite;
+    }
+	
+	public boolean delete(TupleInclusionCommodite inclusionCommodite)
+    {
+		if(inclusionCommodite != null)
+        {
+            cx.getConnection().remove(inclusionCommodite);
+            return true;
         }
-        
-    	rset.close();
-        return lRes;
+        return false;
     }
 	
-	public void insert(int iDChambre, int iDCommodite) throws SQLException
+	public void deleteOnChambre(int iDChambre)
     {
-        stmtInsert.setInt(1, iDChambre);
-        stmtInsert.setInt(2, iDCommodite);
-        stmtInsert.executeUpdate();
-    }
-	
-	public void delete(int iDChambre, int iDCommodite) throws SQLException
-    {
-		stmtDelete.setInt(1, iDChambre);
-		stmtDelete.setInt(2, iDCommodite);
-		stmtDelete.executeUpdate();
-    }
-	
-	public void deleteOnChambre(int iDChambre) throws SQLException
-    {
-		stmtDeleteOnChambre.setInt(1, iDChambre);
+		stmtDeleteOnChambre.setParameter("iDChambre", iDChambre);
 		stmtDeleteOnChambre.executeUpdate();
     }
 }

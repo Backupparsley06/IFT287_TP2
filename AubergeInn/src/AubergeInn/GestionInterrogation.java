@@ -1,5 +1,4 @@
 package AubergeInn;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +22,11 @@ public class GestionInterrogation {
 	}
 	
 	public List<TupleChambre> afficherChambresLibres()
-            throws IFT287Exception, SQLException
+            throws IFT287Exception
     {
         try
         {
-        	//****
+        	cx.demarreTransaction();
         	List<TupleChambre> chambres = new ArrayList<TupleChambre>();
         	for(TupleChambre tupleChambre : tableChambres.getChambres()) {
         		boolean estLibre = true;
@@ -60,11 +59,12 @@ public class GestionInterrogation {
     }
 	
 	public TupleClient afficherClient(int iDClient)
-            throws IFT287Exception, SQLException
+            throws IFT287Exception
     {
 		
         try
         {
+        	cx.demarreTransaction();
         	if (!tableClients.existe(iDClient))
                 throw new IFT287Exception("Client existe pas: " + iDClient);
         	TupleClient tupleClient = tableClients.getClient(iDClient);
@@ -82,11 +82,12 @@ public class GestionInterrogation {
     }
 	
 	public TupleChambre afficherChambre(int iDChambre)
-            throws IFT287Exception, SQLException
+            throws IFT287Exception
     {
 		
         try
         {
+        	cx.demarreTransaction();
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
         	TupleChambre tupleChambre = tableChambres.getChambre(iDChambre);

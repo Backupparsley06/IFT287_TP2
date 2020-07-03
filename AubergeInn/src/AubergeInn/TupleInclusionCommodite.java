@@ -1,6 +1,14 @@
 package AubergeInn;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class TupleInclusionCommodite {
+    @Id @GeneratedValue
+    private long id;
+	
 	private int iDChambre;
 	private int iDCommodite;
 	

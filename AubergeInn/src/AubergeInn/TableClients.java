@@ -1,23 +1,21 @@
 package AubergeInn;
 
-import java.sql.*;
+import java.util.List;
+
+import javax.persistence.*;
+
+
 
 public class TableClients {
-	private PreparedStatement stmtExiste;
-	private PreparedStatement stmtInsert;
-	private PreparedStatement stmtDelete;
+
 	private Connexion cx;
+    private TypedQuery<TupleClient> stmtExiste;
+
 	
 	public TableClients(Connexion cx)
-			throws SQLException
 	{
 		this.cx = cx;
-        stmtExiste = cx.getConnection()
-                .prepareStatement("select IDClient, Nom, Prenom, Age from Client where IDClient = ?");
-        stmtInsert = cx.getConnection().prepareStatement(
-                "insert into Client (IDClient, nom, Prenom, Age) " + "values (?,?,?,?)");
-        stmtDelete = cx.getConnection().prepareStatement("delete from Client where IDClient = ?");
-        
+		stmtExiste = cx.getConnection().createQuery("select c from TupleClient c where c.iDClient = :idClient", TupleClient.class);
 	}
 	
     public Connexion getConnexion()
@@ -25,47 +23,36 @@ public class TableClients {
         return cx;
     }
     
-    public TupleClient getClient(int iDClient) throws SQLException
+    public TupleClient getClient(int iDClient)
     {
-    	stmtExiste.setInt(1, iDClient);
-        ResultSet rset = stmtExiste.executeQuery();
-        if (rset.next())
-        {
-        	TupleClient tupleClient = new TupleClient();
-        	tupleClient.setIDClient(rset.getInt(1));
-        	tupleClient.setNom(rset.getString(2));
-        	tupleClient.setPrenom(rset.getString(3));
-        	tupleClient.setAge(rset.getInt(4));
-            rset.close();
-            return tupleClient;
-        }
+    	stmtExiste.setParameter("idClient", iDClient);
+        List<TupleClient> clients = stmtExiste.getResultList();
+        if (!clients.isEmpty())
+            return clients.get(0);
         else
-        	rset.close();
             return null;
     }
     
-    public boolean existe(int iDClient) throws SQLException
+    public boolean existe(int iDClient)
     {
-        stmtExiste.setInt(1, iDClient);
-        ResultSet rset = stmtExiste.executeQuery();
-        boolean clientExiste = rset.next();
-        rset.close();
-        return clientExiste;
+    	stmtExiste.setParameter("idClient", iDClient);
+        return !stmtExiste.getResultList().isEmpty();
     }
 	
-	public void insert(int iDClient, String nom, String prenom, int age) throws SQLException
+	public TupleClient insert(TupleClient client)
     {
-        stmtInsert.setInt(1, iDClient);
-        stmtInsert.setString(2, nom);
-        stmtInsert.setString(3, prenom);
-        stmtInsert.setInt(4, age);
-        stmtInsert.executeUpdate();
+		cx.getConnection().persist(client);
+		return client;
     }
 	
-	public void delete(int iDClient) throws SQLException
+	public boolean delete(TupleClient client)
     {
-		stmtDelete.setInt(1, iDClient);
-		stmtDelete.executeUpdate();
+		if(client != null)
+        {
+            cx.getConnection().remove(client);
+            return true;
+        }
+        return false;
     }
 	
 	

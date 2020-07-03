@@ -3,12 +3,22 @@ package AubergeInn;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+@Entity
 public class TupleClient {
+    @Id @GeneratedValue
+    private long id;
+    
 	private int iDClient;
 	private String nom;
 	private String prenom;
 	private int age;
-	private List<TupleReservation> reservations;
+	
+	@Transient private List<TupleReservation> reservations;
 	
 	public TupleClient() {
 		setReservations();

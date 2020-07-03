@@ -18,19 +18,18 @@ public class GestionChambre {
 	}
 	
 	public void ajouter(int iDChambre, String nom, String typeLit, double prixBase)
-            throws IFT287Exception, SQLException
+            throws IFT287Exception
     {
         try
         {
+        	cx.demarreTransaction();
         	if (tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe deja: " + iDChambre);
         	if (prixBase < 0)
         		throw new IFT287Exception("Prix de base invalide");
         	
-        	
-        	
             // Ajout du Client.
-        	tableChambres.insert(iDChambre, nom, typeLit, prixBase);
+        	tableChambres.insert(new TupleChambre(iDChambre, nom, typeLit, prixBase));
             
             // Commit
             cx.commit();
@@ -47,6 +46,7 @@ public class GestionChambre {
     {
         try
         {
+        	cx.demarreTransaction();
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
         	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromChambre(iDChambre);
@@ -58,14 +58,14 @@ public class GestionChambre {
     			}
         	}
         	for (TupleReservation tupleReservation : ltupleReservation) {
-        		tableReservations.delete(tupleReservation.getIDReservation());
+        		tableReservations.delete(tupleReservation);
         	}
         	
         	// suppression des commoditees inclus
         	tableInclusionCommodite.deleteOnChambre(iDChambre);
 
             // suppression de la Chambre.
-        	tableChambres.delete(iDChambre);
+        	tableChambres.delete(tableChambres.getChambre(iDChambre));
             
             // Commit
             cx.commit();

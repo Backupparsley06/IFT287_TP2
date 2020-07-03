@@ -3,11 +3,21 @@ package AubergeInn;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+@Entity
 public class TupleChambre {
+    @Id @GeneratedValue
+    private long id;
+	
 	private int iDChambre;
 	private String nom;
 	private String typeLit;
 	private double prixBase;
+	@Transient
 	private List<TupleCommodite> commodites;
 	
 	public TupleChambre() {

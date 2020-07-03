@@ -17,17 +17,18 @@ public class GestionCommodite {
 	}
 	
 	public void ajouter(int iDCommodite, String description, double surplusPrix)
-            throws IFT287Exception, SQLException
+            throws IFT287Exception
     {
         try
         {
+        	cx.demarreTransaction();
         	if (tableCommodites.existe(iDCommodite))
                 throw new IFT287Exception("Commodite existe deja: " + iDCommodite);
         	if (surplusPrix < 0)
         		throw new IFT287Exception("Prix de base invalide");
 
             // Ajout du Client.
-        	tableCommodites.Insert(iDCommodite, description, surplusPrix);
+        	tableCommodites.Insert(new TupleCommodite(iDCommodite, description, surplusPrix));
             
             // Commit
             cx.commit();
@@ -44,6 +45,7 @@ public class GestionCommodite {
     {
         try
         {
+        	cx.demarreTransaction();
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
         	if (!tableCommodites.existe(iDCommodite))
@@ -52,7 +54,7 @@ public class GestionCommodite {
                 throw new IFT287Exception("Commodite deja inclus: " + iDCommodite);
 
             // Ajout de l'inclusion.
-        	tableInclusionCommodite.insert(iDChambre, iDCommodite);
+        	tableInclusionCommodite.insert(new TupleInclusionCommodite(iDChambre, iDCommodite));
             
             // Commit
             cx.commit();
@@ -69,6 +71,7 @@ public class GestionCommodite {
     {
         try
         {
+        	cx.demarreTransaction();
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
         	if (!tableCommodites.existe(iDCommodite))
@@ -77,7 +80,7 @@ public class GestionCommodite {
                 throw new IFT287Exception("Commodite pas inclus: " + iDCommodite);
 
             // Ajout de l'inclusion.
-        	tableInclusionCommodite.delete(iDChambre, iDCommodite);
+        	tableInclusionCommodite.delete(new TupleInclusionCommodite(iDChambre, iDCommodite));
             
             // Commit
             cx.commit();
