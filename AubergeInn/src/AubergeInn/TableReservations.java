@@ -15,8 +15,8 @@ public class TableReservations {
 	{
 		this.cx = cx;
 		
-		stmtFromClient = cx.getConnection().createQuery("select r from TupleReservation r where r.iDClient = :iDClient", TupleReservation.class);
-		stmtFromChambre = cx.getConnection().createQuery("select r from TupleReservation r where r.iDChambre = :idChambre", TupleReservation.class);
+		stmtFromClient = cx.getConnection().createQuery("select r from TupleReservation r where r.client = :iDClient", TupleReservation.class);
+		stmtFromChambre = cx.getConnection().createQuery("select r from TupleReservation r where r.chambre = :idChambre", TupleReservation.class);
 	}
 	
     public Connexion getConnexion()
@@ -24,13 +24,13 @@ public class TableReservations {
         return cx;
     }
     
-    public List<TupleReservation> getReservationsFromClient(int IDClient)
+    public List<TupleReservation> getReservationsFromClient(TupleClient IDClient)
     {
     	stmtFromClient.setParameter("iDClient", IDClient);
         return stmtFromClient.getResultList();
     }
     
-    public List<TupleReservation> getReservationsFromChambre(int IDChambre)
+    public List<TupleReservation> getReservationsFromChambre(TupleChambre IDChambre)
     {
         stmtFromChambre.setParameter("idChambre", IDChambre);
         return stmtFromChambre.getResultList();

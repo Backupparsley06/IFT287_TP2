@@ -11,10 +11,8 @@ public class TupleReservation {
     @Id @GeneratedValue
     private long id;
 	
-    @GeneratedValue
-	private int iDReservation;
-	private int iDClient;
-	private int iDChambre;
+    private TupleClient client;
+    private TupleChambre chambre;
 	private Date dateDebut;
 	private Date dateFin;
 	private double prix;
@@ -22,51 +20,33 @@ public class TupleReservation {
 	public TupleReservation() {
 	}
 	
-	public TupleReservation(int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) {
-		this.setIDClient(iDClient);
-		this.setIDChambre(iDChambre);
+	public TupleReservation(TupleClient client, TupleChambre chambre, Date dateDebut, Date dateFin, double prix) {
+		this.setClient(client);
+		this.setChambre(chambre);
 		this.setDateDebut(dateDebut);
 		this.setDateFin(dateFin);
 		this.setPrix(prix);
 	}
+
 	
-	public TupleReservation(int iDReservation, int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) {
-		this.setIDReservation(iDReservation);
-		this.setIDClient(iDClient);
-		this.setIDChambre(iDChambre);
-		this.setDateDebut(dateDebut);
-		this.setDateFin(dateFin);
-		this.setPrix(prix);
-	}
-	
-	public int getIDReservation()
+	public TupleClient getClient()
     {
-        return iDReservation;
+        return client;
     }
 
-    public void setIDReservation(int iDReservation)
+    public void setClient(TupleClient client)
     {
-        this.iDReservation = iDReservation;
-    }
-	
-	public int getIDClient()
-    {
-        return iDClient;
+        this.client = client;
     }
 
-    public void setIDClient(int iDClient)
+    public TupleChambre getChambre()
     {
-        this.iDClient = iDClient;
+        return chambre;
     }
 
-    public int getIDChambre()
+    public void setChambre(TupleChambre chambre)
     {
-        return iDChambre;
-    }
-
-    public void setIDChambre(int iDChambre)
-    {
-        this.iDChambre = iDChambre;
+        this.chambre = chambre;
     }
 
     public Date getDateDebut()

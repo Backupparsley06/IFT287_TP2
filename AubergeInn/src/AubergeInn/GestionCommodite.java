@@ -6,14 +6,12 @@ public class GestionCommodite {
 	private Connexion cx;
 	private TableCommodites tableCommodites;
 	private TableChambres tableChambres;
-	private TableInclusionCommodites tableInclusionCommodite;
 	
-	public GestionCommodite(TableCommodites tableCommodites, TableChambres tableChambres, TableInclusionCommodites tableInclusionCommodite)
+	public GestionCommodite(TableCommodites tableCommodites, TableChambres tableChambres)
 	{
 		this.cx = tableCommodites.getConnexion();
 		this.tableCommodites = tableCommodites;
 		this.tableChambres = tableChambres;
-		this.tableInclusionCommodite = tableInclusionCommodite;
 	}
 	
 	public void ajouter(int iDCommodite, String description, double surplusPrix)
@@ -50,11 +48,14 @@ public class GestionCommodite {
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
         	if (!tableCommodites.existe(iDCommodite))
                 throw new IFT287Exception("Commodite existe pas: " + iDCommodite);
-        	if (tableInclusionCommodite.existe(iDChambre, iDCommodite))
+        	
+        	TupleChambre chambre = tableChambres.getChambre(iDChambre);
+        	TupleCommodite commodite = tableCommodites.getCommodite(iDCommodite);
+        	
+        	if (chambre.getCommodites().contains(commodite))
                 throw new IFT287Exception("Commodite deja inclus: " + iDCommodite);
 
-            // Ajout de l'inclusion.
-        	tableInclusionCommodite.insert(new TupleInclusionCommodite(iDChambre, iDCommodite));
+        	chambre.addCommodite(commodite);
             
             // Commit
             cx.commit();
@@ -76,11 +77,14 @@ public class GestionCommodite {
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
         	if (!tableCommodites.existe(iDCommodite))
                 throw new IFT287Exception("Commodite existe pas: " + iDCommodite);
-        	if (!tableInclusionCommodite.existe(iDChambre, iDCommodite))
+        	
+        	TupleChambre chambre = tableChambres.getChambre(iDChambre);
+        	TupleCommodite commodite = tableCommodites.getCommodite(iDCommodite);
+        	
+        	if (!chambre.getCommodites().contains(commodite))
                 throw new IFT287Exception("Commodite pas inclus: " + iDCommodite);
-
-            // Ajout de l'inclusion.
-        	tableInclusionCommodite.delete(tableInclusionCommodite.getInclusionCommodite(iDChambre, iDCommodite));
+        	
+        	chambre.getCommodites().remove(commodite);
             
             // Commit
             cx.commit();

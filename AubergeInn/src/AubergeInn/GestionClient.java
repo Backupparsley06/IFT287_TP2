@@ -47,11 +47,11 @@ public class GestionClient {
         	cx.demarreTransaction();
         	if (!tableClients.existe(iDClient))
                 throw new IFT287Exception("Client existe pas: " + iDClient);
-        	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromClient(iDClient);
+        	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromClient(tableClients.getClient(iDClient));
         	for (TupleReservation tupleReservation : ltupleReservation) {
     			if (tupleReservation.getDateDebut().getTime() <= System.currentTimeMillis() 
     					&& tupleReservation.getDateFin().getTime() >= System.currentTimeMillis()) {
-    				throw new IFT287Exception("Client a une reservation en cours: " + tupleReservation.getIDReservation());
+    				throw new IFT287Exception("Client a une reservation en cours ");
     			}
         	}
         	for (TupleReservation tupleReservation : ltupleReservation) {

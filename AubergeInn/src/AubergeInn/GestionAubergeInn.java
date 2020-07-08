@@ -6,7 +6,6 @@ public class GestionAubergeInn {
 	private TableClients tableClients;
 	private TableChambres tableChambres;
 	private TableCommodites tableCommodites;
-	private TableInclusionCommodites tableInclusionCommodite;
 	private TableReservations tableReservations;
 	private GestionClient gestionClient;
 	private GestionChambre gestionChambre;
@@ -21,13 +20,12 @@ public class GestionAubergeInn {
 		tableClients = new TableClients(cx);
 		tableChambres = new TableChambres(cx);
 		tableCommodites = new TableCommodites(cx);
-		tableInclusionCommodite = new TableInclusionCommodites(cx);
 		tableReservations = new TableReservations(cx);
 		setGestionClient(new GestionClient(tableClients, tableReservations));
-		setGestionChambre(new GestionChambre(tableChambres, tableReservations, tableInclusionCommodite));
-		setGestionCommodite(new GestionCommodite(tableCommodites, tableChambres, tableInclusionCommodite));
-		setGestionReservation(new GestionReservation(tableReservations, tableClients, tableChambres, tableInclusionCommodite, tableCommodites));
-		setGestionInterrogation(new GestionInterrogation(tableReservations, tableClients, tableChambres, tableInclusionCommodite, tableCommodites));
+		setGestionChambre(new GestionChambre(tableChambres, tableReservations));
+		setGestionCommodite(new GestionCommodite(tableCommodites, tableChambres));
+		setGestionReservation(new GestionReservation(tableReservations, tableClients, tableChambres, tableCommodites));
+		setGestionInterrogation(new GestionInterrogation(tableReservations, tableClients, tableChambres, tableCommodites));
 	}
 	
     public void fermer() throws SQLException

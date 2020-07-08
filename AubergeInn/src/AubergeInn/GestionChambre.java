@@ -7,14 +7,12 @@ public class GestionChambre {
 	private Connexion cx;
 	private TableChambres tableChambres;
 	private TableReservations tableReservations;
-	private TableInclusionCommodites tableInclusionCommodite;
 	
-	public GestionChambre(TableChambres tableChambres, TableReservations tableReservations, TableInclusionCommodites tableInclusionCommodite)
+	public GestionChambre(TableChambres tableChambres, TableReservations tableReservations)
 	{
 		this.cx = tableChambres.getConnexion();
 		this.tableChambres = tableChambres;
 		this.tableReservations = tableReservations;
-		this.tableInclusionCommodite = tableInclusionCommodite;
 	}
 	
 	public void ajouter(int iDChambre, String nom, String typeLit, double prixBase)
@@ -49,20 +47,17 @@ public class GestionChambre {
         	cx.demarreTransaction();
         	if (!tableChambres.existe(iDChambre))
                 throw new IFT287Exception("Chambre existe pas: " + iDChambre);
-        	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromChambre(iDChambre);
+        	List<TupleReservation> ltupleReservation = tableReservations.getReservationsFromChambre(tableChambres.getChambre(iDChambre));
         	for (TupleReservation tupleReservation : ltupleReservation) {
     			if ((tupleReservation.getDateDebut().getTime() <= System.currentTimeMillis() 
     					&& tupleReservation.getDateFin().getTime() >= System.currentTimeMillis())
     					|| tupleReservation.getDateDebut().getTime() >= System.currentTimeMillis()) {
-    				throw new IFT287Exception("Chambre a une reservation en cours ou dans le future: " + tupleReservation.getIDReservation());
+    				throw new IFT287Exception("Chambre a une reservation en cours ou dans le future");
     			}
         	}
         	for (TupleReservation tupleReservation : ltupleReservation) {
         		tableReservations.delete(tupleReservation);
         	}
-        	
-        	// suppression des commoditees inclus
-        	tableInclusionCommodite.deleteOnChambre(iDChambre);
 
             // suppression de la Chambre.
         	tableChambres.delete(tableChambres.getChambre(iDChambre));

@@ -7,17 +7,15 @@ public class GestionReservation {
 	private TableReservations tableReservations;
 	private TableClients tableClients;
 	private TableChambres tableChambres;
-	private TableInclusionCommodites tableInclusionCommodites;
 	private TableCommodites tableCommodites;
 	
 	public GestionReservation(TableReservations tableReservations, TableClients tableClients,  TableChambres tableChambres, 
-			TableInclusionCommodites tableInclusionCommodites, TableCommodites tableCommodites)
+			TableCommodites tableCommodites)
 	{
 		this.cx = tableReservations.getConnexion();
 		this.tableReservations = tableReservations;
 		this.tableClients = tableClients;
 		this.tableChambres = tableChambres;
-		this.tableInclusionCommodites = tableInclusionCommodites;
 		this.tableCommodites = tableCommodites;
 	}
 	
@@ -35,22 +33,23 @@ public class GestionReservation {
         		throw new IFT287Exception("Dates invalides");
         	}
         	
-        	for (TupleReservation tupleReservation : tableReservations.getReservationsFromChambre(iDChambre)) {
+        	for (TupleReservation tupleReservation : tableReservations.getReservationsFromChambre(tableChambres.getChambre(iDChambre))) {
         		if (!(dateFin.getTime() < tupleReservation.getDateDebut().getTime() 
         				|| dateDebut.getTime() > tupleReservation.getDateFin().getTime()))
         		{
-        			throw new IFT287Exception("Il existe deja une reservation a cette date: " + tupleReservation.getIDReservation());
+        			throw new IFT287Exception("Il existe deja une reservation a cette date ");
         		}
         	}
         	
-        	double prix = tableChambres.getChambre(iDChambre).getPrixBase();
-        	for (TupleInclusionCommodite tupleInclusionCommodite 
-        			: tableInclusionCommodites.getInclusionCommoditeFromChambre(iDChambre))
+        	TupleChambre chambre = tableChambres.getChambre(iDChambre);
+        	double prix = chambre.getPrixBase();
+        	for (TupleCommodite tupleCommodite 
+        			: chambre.getCommodites())
         	{
-        		prix += tableCommodites.getCommodite(tupleInclusionCommodite.getIDCommodite()).getSurplusPrix();
+        		prix += tupleCommodite.getSurplusPrix();
         	}
 
-        	tableReservations.insert(new TupleReservation(iDClient, iDChambre, dateDebut, dateFin, prix));
+        	tableReservations.insert(new TupleReservation(tableClients.getClient(iDClient), tableChambres.getChambre(iDChambre), dateDebut, dateFin, prix));
             // Commit
             cx.commit();
         }

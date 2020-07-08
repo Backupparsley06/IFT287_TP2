@@ -17,7 +17,6 @@ public class TupleChambre {
 	private String nom;
 	private String typeLit;
 	private double prixBase;
-	@Transient
 	private List<TupleCommodite> commodites;
 	
 	public TupleChambre() {
@@ -80,6 +79,11 @@ public class TupleChambre {
     public void setCommodites()
     {
         this.commodites = new ArrayList<TupleCommodite>();
+    }
+    
+    public void addCommodite(TupleCommodite commodite) 
+    {
+    	this.commodites.add(commodite);
     }
     
     public double getPrixTotal()
