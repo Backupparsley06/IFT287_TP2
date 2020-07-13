@@ -1,6 +1,10 @@
 package AubergeInn;
 
-import java.sql.*;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoDatabase;
+
 
 /**
  * Gestionnaire d'une connexion avec une BD relationnelle via JDBC.<br><br>
@@ -27,117 +31,62 @@ import java.sql.*;
  */
 public class Connexion
 {
-    private Connection conn;
+    private MongoClient client;
+    private MongoDatabase database;
 
     /**
-     * Ouverture d'une connexion en mode autocommit false et sérialisable (si
-     * supporté)
+     * Ouverture d'une connexion
      * 
-     * @param serveur Le type de serveur SQL à utiliser (Valeur : local, dinf).
-     * @param bd      Le nom de la base de données sur le serveur.
-     * @param user    Le nom d'utilisateur à utiliser pour se connecter à la base de données.
-     * @param pass    Le mot de passe associé à l'utilisateur.
+     * @serveur serveur � utiliser (local ou dinf)
+     * @bd nom de la base de donn�es
+     * @user userid sur le serveur MongoDB pour la BD specifi�e
+     * @pass mot de passe sur le serveur MongoDB pour la BD specifi�e
      */
-    public Connexion(String serveur, String bd, String user, String pass)
-            throws IFT287Exception, SQLException
+    public Connexion(String serveur, String bd, String user, String pass) throws IFT287Exception
     {
-        try
+    	if (serveur.equals("local"))
         {
-            Class.forName("org.postgresql.Driver");
-            
-            if (serveur.equals("local"))
-            {
-                conn = DriverManager.getConnection("jdbc:postgresql:" + bd, user, pass);
-            }
-            else if (serveur.equals("dinf"))
-            {
-                conn = DriverManager.getConnection("jdbc:postgresql://bd-info2.dinf.usherbrooke.ca:5432/" + bd + "?ssl=true&sslmode=require", user, pass);
-            }
-            else
-            {
-                throw new IFT287Exception("Serveur inconnu");
-            }
-
-            // Mise en mode de commit manuel
-            conn.setAutoCommit(false);
-
-            // Mise en mode sérialisable, si possible
-            // (plus haut niveau d'integrité pour l'accès concurrent aux données)
-            DatabaseMetaData dbmd = conn.getMetaData();
-            if (dbmd.supportsTransactionIsolationLevel(Connection.TRANSACTION_SERIALIZABLE))
-            {
-                conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                System.out.println("Ouverture de la connexion en mode sérialisable :");
-                System.out.println("  Connecté sur la BD postgreSQL " + bd + " avec l'utilisateur " + user);
-            }
-            else
-            {
-                System.out.println("Ouverture de la connexion en mode read committed (default) :");
-                System.out.println("  Connecté sur la BD postgreSQL " + bd + " avec l'utilisateur " + user);
-            }
+            client = new MongoClient();
         }
-        catch (SQLException e)
+        else if (serveur.equals("dinf"))
         {
-            throw e;
+        	MongoClientURI uri = new MongoClientURI("mongodb://"+user+":"+pass+"@bd-info2.dinf.usherbrooke.ca:27017/"+bd+"?ssl=false");
+        	client = new MongoClient(uri);
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace(System.out);
-            throw new IFT287Exception("JDBC Driver non instancié");
+            throw new IFT287Exception("Serveur inconnu");
         }
+        
+    	database = client.getDatabase(bd);
+    	
+    	System.out.println("Ouverture de la connexion :");
+    	System.out.println("  Connect� sur la BD MongoDB " + bd + " avec l'utilisateur " + user);
     }
 
     /**
-     * Fermeture d'une connexion
+     * fermeture d'une connexion
      */
-    public void fermer() throws SQLException
+    public void fermer()
     {
-        conn.rollback();
-        conn.close();
-        System.out.println("Connexion fermée " + conn);
+        client.close();
+        System.out.println("Connexion ferm�e");
     }
-
+    
+    
     /**
-     * Commit
+     * retourne la Connection MongoDB
      */
-    public void commit() throws SQLException
+    public MongoClient getConnection()
     {
-        conn.commit();
+        return client;
     }
-
-    public void setIsolationReadCommited() throws SQLException
-    {
-        conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-    }
-
+    
     /**
-     * Rollback
+     * retourne la DataBase MongoDB
      */
-    public void rollback() throws SQLException
+    public MongoDatabase getDatabase()
     {
-        conn.rollback();
-    }
-
-    /**
-     * Retourne la Connection JDBC
-     */
-    public Connection getConnection()
-    {
-        return conn;
-    }
-
-    public void setAutoCommit(boolean m) throws SQLException
-    {
-        conn.setAutoCommit(false);
-    }
-
-    /**
-     * Retourne la liste des serveurs supportés par ce gestionnaire de
-     * connexions
-     */
-    public static String serveursSupportes()
-    {
-        return "local : PostgreSQL installé localement\n"
-             + "dinf  : PostgreSQL installé sur les serveurs du département\n";
+        return database;
     }
 }

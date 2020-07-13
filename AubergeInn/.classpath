@@ -7,5 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="postgresql.jar"/>
+	<classpathentry kind="lib" path="D:/OfficielProject/IFT287_TP2/AubergeInn/mongo.jar"/>
+	<classpathentry kind="lib" path="D:/OfficielProject/IFT287_TP2/AubergeInn/mongo-javadoc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

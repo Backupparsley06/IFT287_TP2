@@ -1,22 +1,19 @@
 package AubergeInn;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import static com.mongodb.client.model.Filters.eq;
+
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
 
 public class TableCommodites {
-	private PreparedStatement stmtExiste;
-	private PreparedStatement stmtInsert;
 	private Connexion cx;
+	private MongoCollection<Document> commoditesCollection;
 	
 	public TableCommodites(Connexion cx)
-			throws SQLException
 	{
 		this.cx = cx;
-        stmtExiste = cx.getConnection()
-                .prepareStatement("select IDCommodite, Description, SurplusPrix from Commodite where IDCommodite = ?");
-        stmtInsert = cx.getConnection().prepareStatement(
-                "insert into Commodite (IDCommodite, Description, SurplusPrix) " + "values (?,?,?)");
+		commoditesCollection = cx.getDatabase().getCollection("Commodites");
 	}
 	
     public Connexion getConnexion()
@@ -24,39 +21,24 @@ public class TableCommodites {
         return cx;
     }
     
-    public TupleCommodite getCommodite(int idCommodite) throws SQLException
+    public TupleCommodite getCommodite(int idCommodite) 
     {
-    	stmtExiste.setInt(1, idCommodite);
-        ResultSet rset = stmtExiste.executeQuery();
-        if (rset.next())
-        {
-        	TupleCommodite tupleCommodite = new TupleCommodite();
-        	tupleCommodite.setIDCommodite(rset.getInt(1));
-        	tupleCommodite.setDescription(rset.getString(2));
-        	tupleCommodite.setSurplusPrix(rset.getDouble(3));
-            rset.close();
-            return tupleCommodite;
-        }
-        else
-        	rset.close();
-            return null;
+    	Document c = commoditesCollection.find(eq("idCommodite", idCommodite)).first();
+    	if(c != null)
+    	{
+    		return new TupleCommodite(c);
+    	}
+        return null;
     }
     
-    public boolean existe(int IDCommodite) throws SQLException
+    public boolean existe(int idCommodite)
     {
-        stmtExiste.setInt(1, IDCommodite);
-        ResultSet rset = stmtExiste.executeQuery();
-        boolean commoditeExiste = rset.next();
-        rset.close();
-        return commoditeExiste;
+    	return commoditesCollection.find(eq("idCommodite", idCommodite)).first() != null;
     }
 	
-	public void Insert(int iDCommodite, String description, double surplusPrix) throws SQLException
+	public void Insert(int iDCommodite, String description, double surplusPrix)
     {
-        stmtInsert.setInt(1, iDCommodite);
-        stmtInsert.setString(2, description);
-        stmtInsert.setDouble(3, surplusPrix);
-        stmtInsert.executeUpdate();
+		commoditesCollection.insertOne((new TupleCommodite(iDCommodite, description, surplusPrix)).toDocument());
     }
 
 }

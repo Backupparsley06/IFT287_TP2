@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 public class GestionReservation {
-	private Connexion cx;
 	private TableReservations tableReservations;
 	private TableClients tableClients;
 	private TableChambres tableChambres;
@@ -14,7 +13,6 @@ public class GestionReservation {
 	public GestionReservation(TableReservations tableReservations, TableClients tableClients,  TableChambres tableChambres, 
 			TableInclusionCommodites tableInclusionCommodites, TableCommodites tableCommodites)
 	{
-		this.cx = tableReservations.getConnexion();
 		this.tableReservations = tableReservations;
 		this.tableClients = tableClients;
 		this.tableChambres = tableChambres;
@@ -39,7 +37,7 @@ public class GestionReservation {
         		if (!(dateFin.getTime() < tupleReservation.getDateDebut().getTime() 
         				|| dateDebut.getTime() > tupleReservation.getDateFin().getTime()))
         		{
-        			throw new IFT287Exception("Il existe déjà une reservation a cette date : " + tupleReservation.getIDReservation());
+        			throw new IFT287Exception("Il existe déjà une reservation a cette date");
         		}
         	}
         	
@@ -51,12 +49,10 @@ public class GestionReservation {
         	}
 
         	tableReservations.insert(iDClient, iDChambre, dateDebut, dateFin, prix);
-            // Commit
-            cx.commit();
+
         }
         catch (Exception e)
         {
-            cx.rollback();
             throw e;
         }
     }

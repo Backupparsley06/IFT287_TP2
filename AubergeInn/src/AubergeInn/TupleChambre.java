@@ -3,8 +3,10 @@ package AubergeInn;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
+
 public class TupleChambre {
-	private int iDChambre;
+	private int idChambre;
 	private String nom;
 	private String typeLit;
 	private double prixBase;
@@ -12,6 +14,14 @@ public class TupleChambre {
 	
 	public TupleChambre() {
 		this.setCommodites();
+	}
+	
+	public TupleChambre(Document d) {
+		this.setIDChambre(d.getInteger("idChambre"));
+		this.setNom(d.getString("nom"));
+		this.setTypeLit(d.getString("typeLit"));
+		this.setPrixBase(d.getDouble("prixBase"));
+		setCommodites();
 	}
 	
 	public TupleChambre(int iDChambre, String nom, String typeLit, double prixBase) {
@@ -24,12 +34,12 @@ public class TupleChambre {
 	
 	public int getIDChambre()
     {
-        return iDChambre;
+        return idChambre;
     }
 
     public void setIDChambre(int iDChambre)
     {
-        this.iDChambre = iDChambre;
+        this.idChambre = iDChambre;
     }
 
     public String getNom()
@@ -78,7 +88,14 @@ public class TupleChambre {
     	for (TupleCommodite c : getCommodites()) 
     		prix += c.getSurplusPrix();
     	return prix;
-    	
+    }
+    
+    public Document toDocument()
+    {
+    	return new Document().append("idChambre", idChambre)
+    			             .append("nom", nom)
+    			             .append("typeLit", typeLit)
+    			             .append("prixBase", prixBase);
     }
 
 }

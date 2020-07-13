@@ -2,10 +2,11 @@ package AubergeInn;
 
 import java.sql.Date;
 
+import org.bson.Document;
+
 public class TupleReservation {
-	private int iDReservation;
-	private int iDClient;
-	private int iDChambre;
+	private int idClient;
+	private int idChambre;
 	private Date dateDebut;
 	private Date dateFin;
 	private double prix;
@@ -13,8 +14,15 @@ public class TupleReservation {
 	public TupleReservation() {
 	}
 	
-	public TupleReservation(int iDReservation, int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) {
-		this.setIDReservation(iDReservation);
+	public TupleReservation(Document d) {
+		this.setIDClient(d.getInteger("idClient"));
+		this.setIDChambre(d.getInteger("idChambre"));
+		this.setDateDebut(new Date(d.getDate("dateDebut").getTime()));
+		this.setDateFin(new Date(d.getDate("dateFin").getTime()));
+		this.setPrix(d.getDouble("prix"));
+	}
+	
+	public TupleReservation(int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) {
 		this.setIDClient(iDClient);
 		this.setIDChambre(iDChambre);
 		this.setDateDebut(dateDebut);
@@ -22,34 +30,24 @@ public class TupleReservation {
 		this.setPrix(prix);
 	}
 	
-	public int getIDReservation()
-    {
-        return iDReservation;
-    }
-
-    public void setIDReservation(int iDReservation)
-    {
-        this.iDReservation = iDReservation;
-    }
-	
 	public int getIDClient()
     {
-        return iDClient;
+        return idClient;
     }
 
     public void setIDClient(int iDClient)
     {
-        this.iDClient = iDClient;
+        this.idClient = iDClient;
     }
 
     public int getIDChambre()
     {
-        return iDChambre;
+        return idChambre;
     }
 
     public void setIDChambre(int iDChambre)
     {
-        this.iDChambre = iDChambre;
+        this.idChambre = iDChambre;
     }
 
     public Date getDateDebut()
@@ -80,5 +78,14 @@ public class TupleReservation {
     public void setPrix(double prix)
     {
         this.prix = prix;
+    }
+    
+    public Document toDocument()
+    {
+    	return new Document().append("idClient", idClient)
+    			             .append("idChambre", idChambre)
+    			             .append("dateDebut", new java.util.Date(dateDebut.getTime()))
+    			             .append("dateFin", new java.util.Date(dateFin.getTime()))
+    			             .append("prix", prix);
     }
 }

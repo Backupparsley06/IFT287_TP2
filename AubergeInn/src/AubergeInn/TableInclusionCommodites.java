@@ -1,32 +1,23 @@
 package AubergeInn;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+
+import static com.mongodb.client.model.Filters.*;
+
 public class TableInclusionCommodites {
-	private PreparedStatement stmtExiste;
-	private PreparedStatement stmtFromChambre;
-	private PreparedStatement stmtInsert;
-	private PreparedStatement stmtDelete;
-	private PreparedStatement stmtDeleteOnChambre;
 	private Connexion cx;
+	private MongoCollection<Document> inclusionCommoditesCollection;
 	
 	public TableInclusionCommodites(Connexion cx)
-			throws SQLException
 	{
 		this.cx = cx;
-        stmtExiste = cx.getConnection()
-                .prepareStatement("select IDChambre, IDCommodite from InclusionCommodite where IDChambre = ? and IDCommodite = ?");
-    	stmtFromChambre = cx.getConnection()
-                .prepareStatement("select IDChambre, IDCommodite from InclusionCommodite where IDChambre = ?");
-        stmtInsert = cx.getConnection().prepareStatement(
-                "insert into InclusionCommodite (IDChambre, IDCommodite) " + "values (?,?)");
-        stmtDelete = cx.getConnection().prepareStatement("delete from InclusionCommodite where IDChambre = ? and IDCommodite = ?");
-        stmtDeleteOnChambre = cx.getConnection().prepareStatement("delete from InclusionCommodite where IDChambre = ?");
-        
+		inclusionCommoditesCollection = cx.getDatabase().getCollection("InclusionCommodites");
 	}
 	
     public Connexion getConnexion()
@@ -34,50 +25,42 @@ public class TableInclusionCommodites {
         return cx;
     }
     
-    public boolean existe(int iDChambre, int iDCommodite) throws SQLException
+    public boolean existe(int idChambre, int idCommodite)
     {
-        stmtExiste.setInt(1, iDChambre);
-        stmtExiste.setInt(2, iDCommodite);
-        ResultSet rset = stmtExiste.executeQuery();
-        boolean inclusionCommoditeExiste = rset.next();
-        rset.close();
-        return inclusionCommoditeExiste;
+    	return inclusionCommoditesCollection.find(and(eq("idChambre", idChambre), eq("idCommodite", idCommodite))).first() != null;
     }
     
-    public List<TupleInclusionCommodite> getInclusionCommoditeFromChambre(int IDChambre) throws SQLException
+    public List<TupleInclusionCommodite> getInclusionCommoditeFromChambre(int idChambre)
     {
-    	stmtFromChambre.setInt(1, IDChambre);
-        ResultSet rset = stmtFromChambre.executeQuery();
-        
-        List<TupleInclusionCommodite> lRes = new ArrayList<TupleInclusionCommodite>();
-        while (rset.next()) {
-        	TupleInclusionCommodite tupleInclusionCommodite = new TupleInclusionCommodite();
-        	tupleInclusionCommodite.setIDChambre(rset.getInt(1));
-        	tupleInclusionCommodite.setIDCommodite(rset.getInt(2));
-        	lRes.add(tupleInclusionCommodite);
+        List<TupleInclusionCommodite> liste = new ArrayList<TupleInclusionCommodite>();
+        MongoCursor<Document> inclusionCommodites = inclusionCommoditesCollection.find(eq("idChambre", idChambre)).iterator();
+        try
+        {
+            while (inclusionCommodites.hasNext())
+            {
+                liste.add(new TupleInclusionCommodite(inclusionCommodites.next()));
+            }
+        }
+        finally
+        {
+        	inclusionCommodites.close();
         }
         
-    	rset.close();
-        return lRes;
+        return liste;
     }
 	
-	public void insert(int iDChambre, int iDCommodite) throws SQLException
+	public void insert(int idChambre, int idCommodite)
     {
-        stmtInsert.setInt(1, iDChambre);
-        stmtInsert.setInt(2, iDCommodite);
-        stmtInsert.executeUpdate();
+		inclusionCommoditesCollection.insertOne((new TupleInclusionCommodite(idChambre, idCommodite)).toDocument());
     }
 	
-	public void delete(int iDChambre, int iDCommodite) throws SQLException
+	public boolean delete(int idChambre, int idCommodite)
     {
-		stmtDelete.setInt(1, iDChambre);
-		stmtDelete.setInt(2, iDCommodite);
-		stmtDelete.executeUpdate();
+		return inclusionCommoditesCollection.deleteOne(and(eq("idChambre", idChambre), eq("idCommodite", idCommodite))).getDeletedCount() > 0;
     }
 	
-	public void deleteOnChambre(int iDChambre) throws SQLException
+	public boolean deleteOnChambre(int iDChambre)
     {
-		stmtDeleteOnChambre.setInt(1, iDChambre);
-		stmtDeleteOnChambre.executeUpdate();
+		return inclusionCommoditesCollection.deleteMany(eq("idChambre", iDChambre)).getDeletedCount() > 0;
     }
 }

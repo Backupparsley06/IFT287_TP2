@@ -5,7 +5,6 @@
 package AubergeInn;
 
 import java.io.*;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -171,12 +170,11 @@ public class AubergeInn
                 			+ " : " + client.getPrenom()
                 			+ " : " + client.getAge());
                 	
-                	System.out.println("idReservation : idClient : idChambre : dateDebut : dateFin : prixDeLocation");
-                	System.out.println("---------------------------------------------------------------------------");
+                	System.out.println("idClient : idChambre : dateDebut : dateFin : prixDeLocation");
+                	System.out.println("-----------------------------------------------------------");
                 	for(TupleReservation tupleReservation: 
                 		client.getReservations()) {
-                		System.out.println(tupleReservation.getIDReservation() 
-                    			+ " : " + tupleReservation.getIDClient()
+                		System.out.println(tupleReservation.getIDClient()
                     			+ " : " + tupleReservation.getIDChambre()
                     			+ " : " + tupleReservation.getDateDebut()
                     			+ " : " + tupleReservation.getDateFin()

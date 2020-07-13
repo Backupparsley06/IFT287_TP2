@@ -3,14 +3,24 @@ package AubergeInn;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
+
 public class TupleClient {
-	private int iDClient;
+	private int idClient;
 	private String nom;
 	private String prenom;
 	private int age;
 	private List<TupleReservation> reservations;
 	
 	public TupleClient() {
+		setReservations();
+	}
+	
+	public TupleClient(Document d) {
+		this.setIDClient(d.getInteger("idClient"));
+		this.setNom(d.getString("nom"));
+		this.setPrenom(d.getString("prenom"));
+		this.setAge(d.getInteger("age"));
 		setReservations();
 	}
 	
@@ -24,12 +34,12 @@ public class TupleClient {
 	
 	public int getIDClient()
     {
-        return iDClient;
+        return idClient;
     }
 
     public void setIDClient(int iDClient)
     {
-        this.iDClient = iDClient;
+        this.idClient = iDClient;
     }
 
     public String getNom()
@@ -83,6 +93,13 @@ public class TupleClient {
     	for (TupleReservation r : getReservations()) 
     		prix += r.getPrix();
     	return prix;
-    	
+    }
+    
+    public Document toDocument()
+    {
+    	return new Document().append("idClient", idClient)
+    			             .append("nom", nom)
+    			             .append("prenom", prenom)
+    			             .append("age", age);
     }
 }

@@ -1,34 +1,47 @@
 package AubergeInn;
 
+import org.bson.Document;
+
 public class TupleInclusionCommodite {
-	private int iDChambre;
-	private int iDCommodite;
+	private int idChambre;
+	private int idCommodite;
 	
 	public TupleInclusionCommodite() {
 	}
 	
-	public TupleInclusionCommodite(int iDChambre, int iDCommodite) {
-		this.setIDChambre(iDChambre);
-		this.setIDCommodite(iDCommodite);
+	public TupleInclusionCommodite(Document d) {
+		this.setIDChambre(d.getInteger("idChambre"));
+		this.setIDCommodite(d.getInteger("idCommodite"));
+	}
+	
+	public TupleInclusionCommodite(int idChambre, int idCommodite) {
+		this.setIDChambre(idChambre);
+		this.setIDCommodite(idCommodite);
 	}
 	
 	public int getIDChambre()
     {
-        return iDChambre;
+        return idChambre;
     }
 
-    public void setIDChambre(int iDChambre)
+    public void setIDChambre(int idChambre)
     {
-        this.iDChambre = iDChambre;
+        this.idChambre = idChambre;
     }
 
 	public int getIDCommodite()
     {
-        return iDCommodite;
+        return idCommodite;
     }
 
-    public void setIDCommodite(int iDCommodite)
+    public void setIDCommodite(int idCommodite)
     {
-        this.iDCommodite = iDCommodite;
+        this.idCommodite = idCommodite;
+    }
+    
+    public Document toDocument()
+    {
+    	return new Document().append("idChambre", idChambre)
+    			             .append("idCommodite", idCommodite);
     }
 }

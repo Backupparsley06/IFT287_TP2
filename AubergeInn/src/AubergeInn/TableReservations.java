@@ -1,30 +1,25 @@
 package AubergeInn;
 
+import static com.mongodb.client.model.Filters.eq;
+
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+
 import java.util.ArrayList;
 
 public class TableReservations {
-	private PreparedStatement stmtFromClient;
-	private PreparedStatement stmtFromChambre;
-	private PreparedStatement stmtInsert;
-	private PreparedStatement stmtDelete;
 	private Connexion cx;
+	private MongoCollection<Document> reservationsCollection;
 	
 	public TableReservations(Connexion cx)
-			throws SQLException
 	{
 		this.cx = cx;
-		stmtFromClient = cx.getConnection()
-                .prepareStatement("select IDReservation, IDClient, IDChambre, DateDebut, DateFin, Prix from Reservation where IDClient = ?");
-		stmtFromChambre = cx.getConnection()
-                .prepareStatement("select IDReservation, IDClient, IDChambre, DateDebut, DateFin, Prix from Reservation where IDChambre = ?");
-        stmtInsert = cx.getConnection().prepareStatement(
-                "insert into Reservation (IDClient, IDChambre, DateDebut, DateFin, Prix) " + "values (?,?,?,?,?)");
-        stmtDelete = cx.getConnection().prepareStatement("delete from Reservation where IDReservation = ?");
+		reservationsCollection = cx.getDatabase().getCollection("Reservations");
 	}
 	
     public Connexion getConnexion()
@@ -32,62 +27,56 @@ public class TableReservations {
         return cx;
     }
     
-    public List<TupleReservation> getReservationsFromClient(int IDClient) throws SQLException
+    public List<TupleReservation> getReservationsFromClient(int idClient)
     {
-    	stmtFromClient.setInt(1, IDClient);
-        ResultSet rset = stmtFromClient.executeQuery();
-        
         List<TupleReservation> lRes = new ArrayList<TupleReservation>();
-        while (rset.next()) {
-        	TupleReservation tupleReservation = new TupleReservation();
-        	tupleReservation.setIDReservation(rset.getInt(1));
-        	tupleReservation.setIDClient(rset.getInt(2));
-        	tupleReservation.setIDChambre(rset.getInt(3));
-        	tupleReservation.setDateDebut(rset.getDate(4));
-        	tupleReservation.setDateFin(rset.getDate(5));
-        	tupleReservation.setPrix(rset.getDouble(6));
-        	lRes.add(tupleReservation);
+        MongoCursor<Document> reservations = reservationsCollection.find(eq("idClient", idClient)).iterator();
+        try
+        {
+            while (reservations.hasNext())
+            {
+            	lRes.add(new TupleReservation(reservations.next()));
+            }
         }
-        
-    	rset.close();
+        finally
+        {
+        	reservations.close();
+        }
         return lRes;
     }
     
-    public List<TupleReservation> getReservationsFromChambre(int IDChambre) throws SQLException
+    public List<TupleReservation> getReservationsFromChambre(int idChambre)
     {
-    	stmtFromChambre.setInt(1, IDChambre);
-        ResultSet rset = stmtFromChambre.executeQuery();
-        
-        List<TupleReservation> lRes = new ArrayList<TupleReservation>();
-        while (rset.next()) {
-        	TupleReservation tupleReservation = new TupleReservation();
-        	tupleReservation.setIDReservation(rset.getInt(1));
-        	tupleReservation.setIDClient(rset.getInt(2));
-        	tupleReservation.setIDChambre(rset.getInt(3));
-        	tupleReservation.setDateDebut(rset.getDate(4));
-        	tupleReservation.setDateFin(rset.getDate(5));
-        	tupleReservation.setPrix(rset.getDouble(6));
-        	lRes.add(tupleReservation);
+    	List<TupleReservation> lRes = new ArrayList<TupleReservation>();
+        MongoCursor<Document> reservations = reservationsCollection.find(eq("idChambre", idChambre)).iterator();
+        try
+        {
+            while (reservations.hasNext())
+            {
+            	lRes.add(new TupleReservation(reservations.next()));
+            }
         }
-        
-    	rset.close();
+        finally
+        {
+        	reservations.close();
+        }
         return lRes;
     }
     
 	
-	public void insert(int iDClient, int iDChambre, Date dateDebut, Date dateFin, double prix) throws SQLException
+	public void insert(int idClient, int idChambre, Date dateDebut, Date dateFin, double prix)
 	{
-        stmtInsert.setInt(1, iDClient);
-        stmtInsert.setInt(2, iDChambre);
-        stmtInsert.setDate(3, dateDebut);
-        stmtInsert.setDate(4, dateFin);
-        stmtInsert.setDouble(5, prix);
-        stmtInsert.executeUpdate();
+		reservationsCollection.insertOne((new TupleReservation(idClient, idChambre, dateDebut, dateFin, prix)).toDocument());
     }
 	
-	public void delete(int iDReservation) throws SQLException
+	public boolean deleteOnChambre(int idChambre)
     {
-		stmtDelete.setInt(1, iDReservation);
-		stmtDelete.executeUpdate();
+		return reservationsCollection.deleteMany(eq("idChambre", idChambre)).getDeletedCount() > 0;
     }
+	
+	public boolean deleteOnClient(int idClient)
+    {
+		return reservationsCollection.deleteMany(eq("idClient", idClient)).getDeletedCount() > 0;
+    }
+	
 }
