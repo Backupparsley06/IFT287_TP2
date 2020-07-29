@@ -1,0 +1,7 @@
+.clickableRow:hover {
+  background-color: lightblue;
+  cursor: pointer;
+} 
+.clickableRow:active {
+  background-color: skyblue;
+}
